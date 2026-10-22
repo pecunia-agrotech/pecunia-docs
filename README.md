@@ -1,32 +1,22 @@
-# Pecunia AgroTech · versão 2
+# Pecunia AgroTech 
 
 Aplicação local para o Tema 3 do Hackathon UFJF 2026: análise econômica e financeira da pecuária leiteira. Interface em português brasileiro, código e contratos em inglês. Frontend Next.js/React/TypeScript e backend Python 3.12+/FastAPI/Pydantic v2/SQLite. Não utiliza serviços externos durante a operação.
 
-## Executar neste computador
-
-1. Encerre a versão anterior com **Ctrl+C no terminal em que ela foi iniciada**. O iniciador não encerra processos existentes nas portas 3000 e 8000.
-2. Abra o Terminal e entre na pasta do projeto:
-
-```bash
-cd "/Users/lucasrocha/Documents/Codex/2026-10-20/role-atue-como-um-desenvolvedor-senior/outputs/pecunia-agrotech"
-./START.command
-```
-
-3. Aguarde a mensagem de inicialização e abra **http://localhost:3000**. A API fica em **http://localhost:8000/api/v1/health**.
-4. Use Ctrl+C para encerrar os dois servidores.
-
-Também é possível dar dois cliques em `START.command` no Finder. Esta versão não usa Streamlit nem o caminho antigo `work/.venv/bin/streamlit`.
-
-## Preparar em outro computador
+## Como rodar a aplicação?
 
 Instale Python 3.12+ e Node.js 20.9+; Node 24 foi usado na validação. A instalação inicial requer internet. Na pasta do projeto:
 
+Se for linux:
 ```bash
 chmod +x setup.sh START.command
 ./setup.sh
 ./START.command
 ```
-
+Se for Windows: 
+```powershell
+./setup.ps1
+./START.ps1
+```
 O script prepara o ambiente com `uv sync --locked`, instala o frontend por `npm ci`, verifica contratos e gera o build. Depois disso, a execução normal é offline. As versões reproduzíveis estão em `backend/uv.lock` e `frontend/package-lock.json`.
 
 Para desenvolvimento, em terminais separados:
@@ -58,7 +48,7 @@ O seletor de contexto distingue **Histórico real**, **Demonstração** e **Cen�
 
 ## Banco, migração e backup
 
-O novo banco é `backend/data/farm.db`, com esquema em inglês e versão 2. `PECUNIA_DB_PATH` pode apontar para um banco de teste separado. Não há acesso direto do navegador ao SQLite.
+O novo banco é `backend/data/farm.db`, com esquema em inglês. `PECUNIA_DB_PATH` pode apontar para um banco de teste separado. Não há acesso direto do navegador ao SQLite.
 
 Na primeira inicialização padrão, se existir `backend/data/fazenda.db` da versão anterior, o backend faz backup e importa os registros para `farm.db`, preservando IDs, centavos, versões, descrições e identificação de simulação. O arquivo anterior permanece intacto. A migração nesta entrega foi testada sobre uma cópia de 74 registros; o banco ativo não foi migrado enquanto o servidor anterior continuava em execução. Veja `docs/migration-validation.json`.
 
@@ -68,22 +58,43 @@ Sem banco anterior, o contexto real começa vazio e a demonstração recebe 30 d
 
 Backup manual consistente, inclusive com SQLite em WAL:
 
+Versão Linux:
 ```bash
 backend/.venv/bin/python backup_database.py
+```
+Versão Windows:
+```powershell
+backend\.venv\Scripts\python.exe backup_database.py
 ```
 
 Os backups ficam em `backups/`. Para recuperar, encerre os servidores, guarde o banco atual e seus arquivos WAL/SHM, restaure a cópia no caminho configurado e reinicie. Não substitua um banco aberto. O ZIP de código não contém bancos privados, backups ou dependências.
 
 ## Verificações
-
+No Linux:
 ```bash
 cd backend
 uv run pytest -q
 uv run ruff check .
 uv run mypy src main.py
 ```
-
+No windows:
+```powershell
+cd backend
+uv run pytest -q
+uv run ruff check .
+uv run mypy src main.py
+```
+No linux:
 ```bash
+cd frontend
+npm run typecheck
+npm run lint
+npm test
+npm run contracts:check
+npm run build
+```
+No Windows: 
+```powershell
 cd frontend
 npm run typecheck
 npm run lint
