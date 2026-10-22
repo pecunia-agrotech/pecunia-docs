@@ -1,0 +1,10 @@
+{
+  "source_records": 74,
+  "migrated_records": 74,
+  "ids_preserved": true,
+  "amounts_preserved": true,
+  "versions_preserved": true,
+  "contexts_isolated": true,
+  "active_database_changed": false,
+  "schema_version": 2
+}
